@@ -9,6 +9,7 @@ class Sample():
     def __init__(self, path) -> None:
         self.name = path
         self.files = os.listdir(f'data/{path}')
+        self.suggestion = [re.findall(r'(?<=\d_).+(?=\=Proc)', f)[0] for f in self.files]
     
     def return_images(self):
         return [Image.open(f'data/{self.name}/{file}') for file in self.files]
@@ -23,7 +24,11 @@ def main():
     if 'samples' not in st.session_state: 
         st.session_state.samples = [path for path in os.listdir('data') if os.path.isdir(os.path.join('data', path))]
         st.session_state.counter = 0
-        st.session_state.df = pd.DataFrame({'Sample name': [], 'Person 1': [], 'Person 2':[], 'Person 3':[]})
+        st.session_state.df = pd.DataFrame({'Query name': [], 
+                                            'Suggested file': [],
+                                            'Person 1': [], 
+                                            'Person 2':[], 
+                                            'Person 3':[]})
 
     sample = Sample(st.session_state.samples[st.session_state.counter])
     pictures = sample.return_images()
@@ -32,17 +37,25 @@ def main():
     for row in range(-(-len(pictures)) // 3):
         for i, col in enumerate(st.columns(3)):
             k = row * 3 + i
-            col.subheader(re.findall(r'(?<=\d_).+(?=\=Proc)', sample.files[k])[0])
+            col.subheader(sample.suggestion[k])
             col.image(pictures[k])
 
     with st.form('供覧結果', clear_on_submit=True):
         c1, c2, c3, c4 = st.columns(4)
         with c1:
-            person1 = st.number_input('Person 1', step = 1, min_value = 0, max_value = 5, value = 3)
+            c1.subheader('Preson 1')
+            for i in range(1, len(pictures)):
+                c1.radio(sample.suggestion[i], ("OK", 'Bad'), key = f'p1{i}', horizontal=True, args=[1, 0])
         with c2:
-            person2 = st.number_input('Person 2', step = 1, min_value = 0, max_value = 5, value = 3)
+            c2.subheader('Preson 2')
+            for i in range(1, len(pictures)):
+                c2.radio(sample.suggestion[i], ("OK", 'Bad'), key = f'p2{i}', horizontal=True, args=[1, 0])
+
         with c3:
-            person3 = st.number_input('Person 3', step = 1, min_value = 0, max_value = 5, value = 3)
+            c3.subheader('Preson 3')
+            for i in range(1, len(pictures)):
+                c3.radio(sample.suggestion[i], ("OK", 'Bad'), key = f'p3{i}', horizontal=True, args=[1, 0])
+
         with c4:
             push = st.form_submit_button(label = '供覧結果を転機')
     
@@ -61,10 +74,11 @@ def main():
     write_bt = st.button(label = 'Export to excel file')
 
     if push:
-        df_var = pd.DataFrame({'Sample name': [sample.name],
-                               'Person 1': [person1],
-                               'Person 2': [person2],
-                               'Person 3': [person3]})
+        df_var = pd.DataFrame({'Query name': [sample.name for _ in range(len(sample.suggestion) - 1)],
+                               'Suggested file': sample.suggestion[1:],
+                               'Person 1': [v for k, v in st.session_state.items() if 'p1' in k],
+                               'Person 2': [v for k, v in st.session_state.items() if 'p2' in k],
+                               'Person 3': [v for k, v in st.session_state.items() if 'p3' in k]})
         st.session_state.df = pd.concat([df_var, st.session_state.df])
 
     edited_df = st.data_editor(st.session_state.df, num_rows='dynamic')
