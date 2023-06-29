@@ -1,6 +1,7 @@
 import streamlit as st
 from PIL import Image
 import os
+import re
 import pandas as pd
 import datetime as dt
 
@@ -20,19 +21,19 @@ def main():
     st.title('内視鏡 類似画像供覧ツール')
 
     if 'samples' not in st.session_state: 
-        st.session_state.samples = [Sample(path) for path in os.listdir('data') if os.path.isdir(os.path.join('data', path))]
+        st.session_state.samples = [path for path in os.listdir('data') if os.path.isdir(os.path.join('data', path))]
         st.session_state.counter = 0
         st.session_state.df = pd.DataFrame({'Sample name': [], 'Person 1': [], 'Person 2':[], 'Person 3':[]})
 
-    cols = st.columns(3)
-    cols[0].image(st.session_state.samples[st.session_state.counter].return_images()[0])
-    cols[1].image(st.session_state.samples[st.session_state.counter].return_images()[1])
-    cols[2].image(st.session_state.samples[st.session_state.counter].return_images()[2])
+    sample = Sample(st.session_state.samples[st.session_state.counter])
+    pictures = sample.return_images()
+    st.write(f'Query file is: {sample.name}')
 
-    cols = st.columns(3)
-    cols[0].image(st.session_state.samples[st.session_state.counter].return_images()[3])
-    cols[1].image(st.session_state.samples[st.session_state.counter].return_images()[4])
-    cols[2].image(st.session_state.samples[st.session_state.counter].return_images()[5])
+    for row in range(-(-len(pictures)) // 3):
+        for i, col in enumerate(st.columns(3)):
+            k = row * 3 + i
+            col.subheader(re.findall(r'(?<=\d_).+(?=\=Proc)', sample.files[k])[0])
+            col.image(pictures[k])
 
     with st.form('供覧結果', clear_on_submit=True):
         c1, c2, c3, c4 = st.columns(4)
@@ -45,20 +46,22 @@ def main():
         with c4:
             push = st.form_submit_button(label = '供覧結果を転機')
     
+    def minus_counter():
+        st.session_state['counter'] -= 1
+
+    def plus_counter():
+        st.session_state['counter'] += 1
+
     col1, col2 =st.columns(2)
     with col1:
-        prev_bt = st.button('<< 前の画像へ', key = 'prev_bt')
+        st.button('<< 前の画像へ', on_click=minus_counter)
     with col2:
-        next_bt = st.button('次の画像へ >>', key = 'next_bt')
+        st.button('次の画像へ >>', on_click=plus_counter)
 
     write_bt = st.button(label = 'Export to excel file')
 
-    if next_bt:
-        st.session_state.counter += 1
-    if prev_bt:
-        st.session_state.counter += 0
     if push:
-        df_var = pd.DataFrame({'Sample name': [st.session_state.samples[st.session_state.counter].name],
+        df_var = pd.DataFrame({'Sample name': [sample.name],
                                'Person 1': [person1],
                                'Person 2': [person2],
                                'Person 3': [person3]})
@@ -69,5 +72,6 @@ def main():
     if write_bt:
         fname = 'output/' + dt.datetime.now().strftime('%Y%m%d_%H%M%S') + '.xlsx'
         edited_df.to_excel(fname)
+
 if __name__ == '__main__':
     main()
