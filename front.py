@@ -71,8 +71,6 @@ def main():
     with col2:
         st.button('次の画像へ >>', on_click=plus_counter)
 
-    write_bt = st.button(label = 'Export to excel file')
-
     if push:
         df_var = pd.DataFrame({'Query name': [sample.name for _ in range(len(sample.suggestion) - 1)],
                                'Suggested file': sample.suggestion[1:],
@@ -83,9 +81,10 @@ def main():
 
     edited_df = st.data_editor(st.session_state.df, num_rows='dynamic')
 
-    if write_bt:
-        fname = 'output/' + dt.datetime.now().strftime('%Y%m%d_%H%M%S') + '.xlsx'
-        edited_df.to_excel(fname)
+    st.download_button(label = 'Download csv file',
+                       data = edited_df.to_csv().encode('shift-jis'),
+                       mime = 'text/csv',
+                       file_name = 'output/' + dt.datetime.now().strftime('%Y%m%d_%H%M%S') + '.csv')
 
 if __name__ == '__main__':
     main()
