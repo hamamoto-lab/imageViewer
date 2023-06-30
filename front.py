@@ -27,12 +27,18 @@ def main():
         st.session_state.log[st.session_state.counter] = 1
 
     def minus_counter():
-        if st.session_state:
+        if st.session_state.counter:
             st.session_state['counter'] -= 1
-        
+        else:
+            # TODO "最初のクエリです"というポップアップダイアログを出したい
+            pass
 
     def plus_counter():
-        st.session_state['counter'] += 1
+        if (st.session_state.counter + 1) < len(st.session_state.samples):
+            st.session_state['counter'] += 1
+        else:
+            # TODO "最後のクエリです"というポップアップダイアログを出したい
+            pass
 
 
     # ========= Initializing app state =========
