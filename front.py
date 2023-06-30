@@ -131,7 +131,7 @@ def main():
     st.download_button(label = 'Download csv file',
                        data = edited_df.to_csv().encode('shift-jis'),
                        mime = 'text/csv',
-                       file_name = 'output/' + dt.datetime.now().strftime('%Y%m%d_%H%M%S') + '.csv')
+                       file_name = dt.datetime.now().strftime('%Y%m%d_%H%M%S') + '.csv')
 
 if __name__ == '__main__':
     main()
