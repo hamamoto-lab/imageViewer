@@ -70,11 +70,12 @@ def main():
         st.markdown(f'Query file is: {sample.name}')
 
     ## >>>> Pictures with tile-like viewing <<<<
-    for row in range(-(-len(pictures)) // 3):
+    for row in range((len(pictures) + 2) // 3):
         for i, col in enumerate(st.columns(3)):
             k = row * 3 + i
-            col.subheader(sample.suggestion[k])
-            col.image(pictures[k])
+            if k < len(pictures):
+                col.subheader(sample.suggestion[k])
+                col.image(pictures[k])
 
     ## >>>> Input form <<<<
     with st.form('供覧結果', clear_on_submit=True):
