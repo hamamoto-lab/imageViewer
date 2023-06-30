@@ -6,7 +6,7 @@
 
 ### 2023.06.30
 
-- データテーブルを編集した時の結果が保存されないバグを修正
+- データテーブルを編集した時の結果が保存されないバグを修正（issues: [#1](https://github.com/hamamoto-lab/imageViewer/issues/1)）
 
 # Installation
 
