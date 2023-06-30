@@ -17,13 +17,35 @@ class Sample():
 def main():
 
     # ========= Define functions =========
+    def edit_tbl():
+        data_dict = st.session_state.data
+        if len(data_dict['edited_rows'].keys()):
+            d = pd.DataFrame.from_dict(data_dict['edited_rows'], orient='index')
+            st.session_state['df'].update(d)
+            
+        if len(data_dict['deleted_rows']):
+            for idx in data_dict['deleted_rows']:
+                st.session_state['df'].drop(idx, inplace = True)
+            st.session_state['df'].reset_index(drop=True, inplace=True)
+            st.session_state.data['deleted_rows'] = []
+        
+        if len(data_dict['added_rows']):
+            df = st.session_state['df']
+            d_new = pd.DataFrame({'Query name': [None],
+                                  'Suggested file': [None],
+                                  'Person 1': [None],
+                                  'Person 2': [None],
+                                  'Person 3': [None]})
+            st.session_state['df'] = pd.concat([df, d_new]).reset_index(drop=True)
+            st.session_state.data['added_rows'] = []
+
     def push_tbl():
         df_var = pd.DataFrame({'Query name': [sample.name for _ in range(len(sample.suggestion) - 1)],
                                'Suggested file': sample.suggestion[1:],
                                'Person 1': [v for k, v in st.session_state.items() if 'p1' in k],
                                'Person 2': [v for k, v in st.session_state.items() if 'p2' in k],
                                'Person 3': [v for k, v in st.session_state.items() if 'p3' in k]})
-        st.session_state.df = pd.concat([df_var, st.session_state.df])
+        st.session_state.df = pd.concat([df_var, st.session_state.df]).reset_index(drop=True)
         st.session_state.log[st.session_state.counter] = 1
 
     def minus_counter():
@@ -103,7 +125,7 @@ def main():
         st.button('次の画像へ >>', on_click=plus_counter)
 
     ## >>>> Data table of reviewing results <<<<
-    edited_df = st.data_editor(st.session_state.df, num_rows='dynamic')
+    edited_df = st.data_editor(st.session_state.df, num_rows='dynamic', on_change=edit_tbl, key='data')
 
     ## >>>> Download button <<<<
     st.download_button(label = 'Download csv file',
