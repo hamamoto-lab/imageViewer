@@ -1,4 +1,6 @@
 # 内視鏡画像供覧用 Viewerです
+## 開発状況
+- 未修正のバグがあります。詳しくは`issues`をご確認下さい
 
 # Installation
 1. `git clone`する
