@@ -11,11 +11,13 @@
 # Installation
 
 1. `git clone`する
+
    ```
    git clone git@github.com:hamamoto-lab/imageViewer.git
    ```
 2. git cloneしたディレクトリに移動する
 3. `conda create`する
+
    ```
    conda create -f env.yml
    ```
