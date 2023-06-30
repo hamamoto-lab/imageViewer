@@ -42,4 +42,4 @@
    ```
    streamlit run front.py
    ```
-3. [localhost:8501](localhost:8501)にブラウザからアクセスする
+3. [localhost:8501](http://localhost:8501)にブラウザからアクセスする
