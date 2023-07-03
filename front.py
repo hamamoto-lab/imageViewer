@@ -44,7 +44,8 @@ def main():
                                'Suggested file': sample.suggestion[1:],
                                'Person 1': [v for k, v in st.session_state.items() if 'p1' in k],
                                'Person 2': [v for k, v in st.session_state.items() if 'p2' in k],
-                               'Person 3': [v for k, v in st.session_state.items() if 'p3' in k]})
+                               'Person 3': [v for k, v in st.session_state.items() if 'p3' in k],
+                               '撮像モード': [v for k, v in st.session_state.items() if 'mode_' in k]})
         st.session_state.df = pd.concat([df_var, st.session_state.df]).reset_index(drop=True)
         st.session_state.log[st.session_state.counter] = 1
 
@@ -70,9 +71,11 @@ def main():
         st.session_state.df = pd.DataFrame({'Query name': [], 
                                             'Suggested file': [],
                                             'Person 1': [], 
-                                            'Person 2':[], 
-                                            'Person 3':[]})
+                                            'Person 2': [], 
+                                            'Person 3': [],
+                                            '撮像モード': []})
         st.session_state["error_massage"] = None
+
     sample = Sample(st.session_state.samples[st.session_state.counter])
     pictures = sample.return_images()
 
@@ -84,6 +87,11 @@ def main():
     ## >>>> Ttitle <<<<
     st.title('内視鏡 類似画像供覧ツール')
 
+    ## >>>> Project information <<<<
+    # ToDo: プロジェクトに関する情報を入力する箇所を作る
+    # - [ ] Folding可能
+    # - [ ] "Load project"ボタンでログファイル選択可能
+
     ## >>>> Query name <<<<
     if st.session_state.log[st.session_state.counter]:
         st.markdown(f'Query file is: {sample.name} **:red[供覧済みです!]**')
@@ -94,13 +102,16 @@ def main():
     for row in range((len(pictures) + 2) // 3):
         for i, col in enumerate(st.columns(3)):
             k = row * 3 + i
-            if k < len(pictures):
-                col.subheader(sample.suggestion[k])
+            if k == 0:
+                col.subheader(f"Query: {sample.suggestion[k]}")
+                col.image(pictures[k])
+            elif k < len(pictures):
+                col.subheader(f"{str(k)}: {sample.suggestion[k]}")
                 col.image(pictures[k])
 
     ## >>>> Input form <<<<
     with st.form('供覧結果', clear_on_submit=True):
-        c1, c2, c3, c4 = st.columns(4)
+        c1, c2, c3, c4, c5 = st.columns(5)
         with c1:
             c1.subheader('Preson 1')
             for i in range(1, len(pictures)):
@@ -112,9 +123,13 @@ def main():
         with c3:
             c3.subheader('Preson 3')
             for i in range(1, len(pictures)):
-                c3.radio(sample.suggestion[i], ("OK", 'Bad'), key = f'p3{i}', horizontal=True, args=[1, 0])
+                c3.radio(f"{str(i)}:   {sample.suggestion[i]}", ("OK", 'Bad'), key = f'p3{i}', horizontal=True, args=[1, 0])
         with c4:
-            st.form_submit_button(label = '供覧結果を転機', on_click = push_tbl)
+            c4.subheader('撮像モード')
+            for i in range(1, len(pictures)):
+                c4.radio(f"{str(i)}:   {sample.suggestion[i]}", ('BLI', 'Indigo', 'LCI', 'NBI', 'WLI'), key = f'mode_{i}', horizontal=True, args=[1, 0])
+        with c5:
+            st.form_submit_button(label = '供覧結果を転記', on_click = push_tbl)
 
     ## >>>> Move next and previous buttons <<<<
     col1, col2 =st.columns(2)
