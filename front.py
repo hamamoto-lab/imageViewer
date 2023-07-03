@@ -51,17 +51,16 @@ def main():
     def minus_counter():
         if st.session_state.counter:
             st.session_state['counter'] -= 1
+            st.session_state["error_massage"] = None
         else:
-            # TODO "最初のクエリです"というポップアップダイアログを出したい
-            pass
+            st.session_state["error_massage"] = "最初のクエリです"
 
     def plus_counter():
         if (st.session_state.counter + 1) < len(st.session_state.samples):
             st.session_state['counter'] += 1
+            st.session_state["error_massage"] = None
         else:
-            # TODO "最後のクエリです"というポップアップダイアログを出したい
-            pass
-
+            st.session_state["error_massage"] = "最後のクエリです"
 
     # ========= Initializing app state =========
     if 'samples' not in st.session_state: 
@@ -73,7 +72,7 @@ def main():
                                             'Person 1': [], 
                                             'Person 2':[], 
                                             'Person 3':[]})
-
+        st.session_state["error_massage"] = None
     sample = Sample(st.session_state.samples[st.session_state.counter])
     pictures = sample.return_images()
 
@@ -123,7 +122,12 @@ def main():
         st.button('<< 前の画像へ', on_click=minus_counter)
     with col2:
         st.button('次の画像へ >>', on_click=plus_counter)
-
+    
+    ## >>>> PopUp Error Massage <<<<
+    error_empty = st.empty()
+    if st.session_state.error_massage is not None:
+        error_empty.error(st.session_state.error_massage)
+    
     ## >>>> Data table of reviewing results <<<<
     edited_df = st.data_editor(st.session_state.df, num_rows='dynamic', on_change=edit_tbl, key='data')
 
