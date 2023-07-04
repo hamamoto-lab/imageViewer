@@ -5,6 +5,7 @@ import re
 import pandas as pd
 import datetime as dt
 import json
+from enum import Enum
 from zipfile import ZipFile, ZIP_DEFLATED
 
 class Sample():
@@ -15,6 +16,13 @@ class Sample():
     
     def return_images(self):
         return [Image.open(f'data/{self.name}/{file}') for file in self.files]
+
+class Mode(Enum):
+    BLI = 0
+    Indigo = 1
+    LCI = 2
+    NBI = 3
+    WLI = 4
 
 def main():
 
@@ -81,7 +89,6 @@ def main():
             if st.session_state['samples'] == json['samples']:
                 st.session_state.update(log)
                 st.session_state['init'] = 1
-                st.experimental_rerun()
             else:
                 st.error('選択したログファイルとdataディレクトリにあるクエリ画像フォルダリストが一致しません！dataディレクトリに正しいクエリ画像フォルダを置いて下さい。')
         except KeyError:
@@ -104,7 +111,7 @@ def main():
                                                                                       'name_person2', 'name_person3']},
                                                                                       indent=4)
             z.writestr(fname + '.log', dump_log)
-            z.writestr(fname + '.csv', st.session_state['df'].to_csv())
+            z.writestr(fname + '.csv', st.session_state['df'].to_csv(index=False))
         
     # ========= Initializing app state =========
     if 'samples' not in st.session_state: 
@@ -138,10 +145,15 @@ def main():
                     st.text_input('Person Name 3', placeholder='供覧者3の名前を入力して下さい', key='f4')
                     st.form_submit_button('プロジェクト開始', on_click=start_1)
             else:
-                file = st.file_uploader('ログファイルから解析を再開')
-                if file is not None:
-                    log = json.load(file)
-                    load_logfile(log)
+                files = st.file_uploader('ログファイルから解析を再開', accept_multiple_files=True, help='\~.log(必須)と\~.csvの最大2つのファイルを選択することが可能です。')
+                if files is not None:
+                    for f in files:
+                        if 'csv' in f.name:
+                            st.session_state['df'] = pd.read_csv(f)
+                        if 'log' in f.name:
+                            log = json.load(f)
+                            load_logfile(log)
+                    st.experimental_rerun()
         else:
             # ====== Slide bar =====
             with st.form('query state'):
@@ -195,23 +207,38 @@ def main():
 
         ## >>>> Input form <<<<
         with st.form('供覧結果', clear_on_submit=True):
+            if st.session_state['log'][st.session_state['counter']]:
+                df_inputed_prev = st.session_state['df'][st.session_state['df']['Query name'] == sample.name].to_dict()
+                radio_defaults1 = [vv for k, v in df_inputed_prev.items() for vv in v.values() if st.session_state['name_person1'] in k]
+                radio_defaults2 = [vv for k, v in df_inputed_prev.items() for vv in v.values() if st.session_state['name_person2'] in k]
+                radio_defaults3 = [vv for k, v in df_inputed_prev.items() for vv in v.values() if st.session_state['name_person3'] in k]
+                radio_defaults4 = [vv for k, v in df_inputed_prev.items() for vv in v.values() if '撮像モード' in k]
+            else:
+                radio_defaults1 = ['OK' for _ in range(1, len(pictures))]
+                radio_defaults2 = ['OK' for _ in range(1, len(pictures))]
+                radio_defaults3 = ['OK' for _ in range(1, len(pictures))]
+                radio_defaults4 = ['BLI' for _ in range(1, len(pictures))]
+            radio_defaults1 = [0 if value == 'OK' else 1 for value in radio_defaults1]
+            radio_defaults2 = [0 if value == 'OK' else 1 for value in radio_defaults2]
+            radio_defaults3 = [0 if value == 'OK' else 1 for value in radio_defaults3]
+            radio_defaults4 = [Mode[value].value for value in radio_defaults4]
             c1, c2, c3, c4, c5 = st.columns(5)
             with c1:
                 c1.subheader(f"{st.session_state['name_person1']}")
                 for i in range(1, len(pictures)):
-                    c1.radio(sample.suggestion[i], ("OK", 'Bad'), key = f'p1{i}', horizontal=True)
+                    c1.radio(sample.suggestion[i], ("OK", 'Bad'), key = f'p1{i}', horizontal=True, index=radio_defaults1[i - 1])
             with c2:
                 c2.subheader(f"{st.session_state['name_person2']}")
                 for i in range(1, len(pictures)):
-                    c2.radio(sample.suggestion[i], ("OK", 'Bad'), key = f'p2{i}', horizontal=True)
+                    c2.radio(sample.suggestion[i], ("OK", 'Bad'), key = f'p2{i}', horizontal=True, index=radio_defaults2[i - 1])
             with c3:
                 c3.subheader(f"{st.session_state['name_person3']}")
                 for i in range(1, len(pictures)):
-                    c3.radio(f"{str(i)}:   {sample.suggestion[i]}", ("OK", 'Bad'), key = f'p3{i}', horizontal=True)
+                    c3.radio(f"{str(i)}:   {sample.suggestion[i]}", ("OK", 'Bad'), key = f'p3{i}', horizontal=True, index=radio_defaults3[i - 1])
             with c4:
                 c4.subheader('撮像モード')
                 for i in range(1, len(pictures)):
-                    c4.radio(f"{str(i)}:   {sample.suggestion[i]}", ('BLI', 'Indigo', 'LCI', 'NBI', 'WLI'), key = f'mode_{i}', horizontal=True)
+                    c4.radio(f"{str(i)}:   {sample.suggestion[i]}", ('BLI', 'Indigo', 'LCI', 'NBI', 'WLI'), key = f'mode_{i}', horizontal=True, index=radio_defaults4[i - 1])
             with c5:
                 st.form_submit_button(label = '供覧結果を転記', on_click = push_tbl)
         
