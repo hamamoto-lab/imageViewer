@@ -22,6 +22,15 @@
    conda create -f env.yml
    ```
 
+
+# Demonstration
+## `はじめから解析する`
+![demo_1](https://github.com/hamamoto-lab/imageViewer/assets/7193590/47c83f22-c865-4907-9fce-9b344873f3c3)
+
+## `途中から解析を再開する`
+![demo_2](https://github.com/hamamoto-lab/imageViewer/assets/7193590/655972e0-b289-4c0e-b261-94f893172ea1)
+
+
 # How to use
 
 1. `data`ディレクトリに供覧したいデータを入れます
