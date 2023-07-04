@@ -4,6 +4,10 @@
 
 - 未修正のバグがあります。詳しくは `issues`をご確認下さい
 
+### 2023.07.04
+
+- 近藤さんからのリクエスト部分を機能追加（issues: [#9](https://github.com/hamamoto-lab/imageViewer/issues/9)）
+
 ### 2023.06.30
 
 - データテーブルを編集した時の結果が保存されないバグを修正（issues: [#1](https://github.com/hamamoto-lab/imageViewer/issues/1)）
