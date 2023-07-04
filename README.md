@@ -29,11 +29,10 @@
 
 # Demonstration
 ## `はじめから解析する`
-![demo_1](https://github.com/hamamoto-lab/imageViewer/assets/7193590/47c83f22-c865-4907-9fce-9b344873f3c3)
+![demo_1](https://github.com/hamamoto-lab/imageViewer/assets/7193590/580572c5-0289-4ff4-83df-d91569b0afc8)
 
 ## `途中から解析を再開する`
-![demo_2](https://github.com/hamamoto-lab/imageViewer/assets/7193590/655972e0-b289-4c0e-b261-94f893172ea1)
-
+![demo_2](https://github.com/hamamoto-lab/imageViewer/assets/7193590/40c35c6b-2cef-4ca1-ba13-110187b355db)
 
 # How to use
 
@@ -42,12 +41,12 @@
    ```
    data/
      |– sample01/
-     |	|– file_01.png
-     |	|– file_02.png
-     |	|– file_03.png
-     |	|– file_04.png
-     |	|– file_05.png
-     |	|– file_06.png
+     |	|– 0_file_01=ProcXXXXX.png
+     |	|– 1_file_02=ProcXXXXX.png
+     |	|– 2_file_03=ProcXXXXX.png
+     |	|– 3_file_04=ProcXXXXX.png
+     |	|– 4_file_05=ProcXXXXX.png
+     |	|– 5_file_06=ProcXXXXX.png
      |– sample02/
      |	|– ︙
 
@@ -58,3 +57,7 @@
    streamlit run front.py
    ```
 3. [localhost:8501](http://localhost:8501)にブラウザからアクセスする
+
+# Tips
+- ファイル名は`数字_任意の文字列1=Proc任意の文字列2.拡張子`として下さい
+- 画像名として表示されるのは、`任意の文字列1`の部分になります
