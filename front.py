@@ -11,8 +11,8 @@ from zipfile import ZipFile, ZIP_DEFLATED
 class Sample():
     def __init__(self, path) -> None:
         self.name = path
-        self.files = os.listdir(f'data/{path}')
-        self.suggestion = [re.findall(r'(?<=\d_).+(?=\=Proc)', f)[0] for f in self.files]
+        self.files = [f for f in os.listdir(f'data/{path}') if not f.startswith('.')]
+        self.suggestion = [re.findall(r'(?<=\d_).+?(?==Proc)', f)[0] for f in self.files]
     
     def return_images(self):
         return [Image.open(f'data/{self.name}/{file}') for file in self.files]
