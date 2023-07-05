@@ -11,9 +11,10 @@ import shutil
 class Sample():
     def __init__(self, path) -> None:
         self.name = path
-        self.files = [f for f in os.listdir(f'data/{path}') if not f.startswith('.')]
+        self.files = sorted([f for f in os.listdir(f'data/{path}') if not f.startswith('.')],
+                            key=lambda x: int(re.findall(r'^\d+(?=_)', x)[0]))
         self.suggestion = [re.findall(r'(?<=\d_).+?(?==Proc)', f)[0] for f in self.files]
-    
+                                 
     def return_images(self):
         return [Image.open(f'data/{self.name}/{file}') for file in self.files]
 
@@ -118,13 +119,13 @@ def main():
     # ========= Initializing app state =========
     try:
         if 'samples' not in st.session_state: 
-            st.session_state.samples = [path for path in os.listdir('data') if os.path.isdir(os.path.join('data', path))]
-            st.session_state.log = [0 for _ in range(len(st.session_state.samples))]
-            st.session_state.counter = 0
+            st.session_state['samples'] = [path for path in os.listdir('data') if os.path.isdir(os.path.join('data', path))]
+            st.session_state['log'] = [0 for _ in range(len(st.session_state['samples']))]
+            st.session_state['counter'] = 0
             st.session_state["error_massage"] = None
             st.session_state['init'] = 0
 
-        sample = Sample(st.session_state.samples[st.session_state.counter])
+        sample = Sample(st.session_state.samples[st.session_state['counter']])
         pictures = sample.return_images()
 
 
