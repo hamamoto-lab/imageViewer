@@ -6,10 +6,10 @@
 ----------
 
 ## "はじめから解析する"
-![demo_1](https://github.com/hamamoto-lab/imageViewer/assets/7193590/580572c5-0289-4ff4-83df-d91569b0afc8)
+![demo_1](https://github.com/hamamoto-lab/imageViewer/assets/7193590/d22e0aff-86a1-4543-8454-95332b205811)
 
 ## "途中から解析を再開する"
-![demo_2](https://github.com/hamamoto-lab/imageViewer/assets/7193590/40c35c6b-2cef-4ca1-ba13-110187b355db)
+![demo_2](https://github.com/hamamoto-lab/imageViewer/assets/7193590/d5e18846-d86e-41d8-9bfb-a7a2a66d786c)
 
 
 
