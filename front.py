@@ -193,7 +193,7 @@ def main():
                                     data = fp,
                                     file_name='results.zip',
                                     mime = 'application/zip')
-                    os.remove('results.zip')
+                os.remove('results.zip')
 
         if st.session_state['init']:
             ## >>>> Ttitle <<<<
