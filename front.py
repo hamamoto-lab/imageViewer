@@ -119,7 +119,7 @@ def main():
     # ========= Initializing app state =========
     try:
         if 'samples' not in st.session_state: 
-            st.session_state['samples'] = [path for path in os.listdir('data') if os.path.isdir(os.path.join('data', path))]
+            st.session_state['samples'] = sorted([path for path in os.listdir('data') if os.path.isdir(os.path.join('data', path))])
             st.session_state['log'] = [0 for _ in range(len(st.session_state['samples']))]
             st.session_state['counter'] = 0
             st.session_state["error_massage"] = None
@@ -167,8 +167,9 @@ def main():
                 
                 ## >>>> Query name <<<<
                 if st.session_state.log[st.session_state.counter]:
-                    st.markdown(f'Query file is: {sample.name}')
-                    st.markdown('**:red[供覧済みです!]**')
+                    st.markdown('**Query file is**')
+                    st.info(sample.name)
+                    st.error('供覧済みです!')
                 else:
                     st.markdown('**Query file is**')
                     st.info(sample.name)
