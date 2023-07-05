@@ -239,7 +239,7 @@ def main():
                 with c4:
                     c4.subheader('撮像モード')
                     for i in range(1, len(pictures)):
-                        c4.radio(f"{str(i)}:   {sample.suggestion[i]}", ('BLI', 'Indigo', 'LCI', 'NBI', 'WLI'), key = f'mode_{i}', horizontal=True, index=radio_defaults4[i - 1])
+                        c4.selectbox(f"{str(i)}:   {sample.suggestion[i]}", ('BLI', 'Indigo', 'LCI', 'NBI', 'WLI'), key = f'mode_{i}', index=radio_defaults4[i - 1])
                 with c5:
                     st.form_submit_button(label = '供覧結果を転記', on_click = push_tbl)
             
