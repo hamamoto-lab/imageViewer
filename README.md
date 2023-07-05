@@ -1,16 +1,16 @@
 # 内視鏡画像供覧用 Viewer
 
-## 開発状況
+`data`ディレクトリに入れた画像群をタイル状に表示させながら、表示画像の評価を最大3人の評価者で行うためのツールです。
 
-- 未修正のバグがある場合があります。詳しくは `issues`をご確認下さい
+----------
 
-### 2023.07.04
+## "はじめから解析する"
+![demo_1](https://github.com/hamamoto-lab/imageViewer/assets/7193590/580572c5-0289-4ff4-83df-d91569b0afc8)
 
-- 近藤さんからのリクエスト部分を機能追加（issues: [#9](https://github.com/hamamoto-lab/imageViewer/issues/9)）
+## "途中から解析を再開する"
+![demo_2](https://github.com/hamamoto-lab/imageViewer/assets/7193590/40c35c6b-2cef-4ca1-ba13-110187b355db)
 
-### 2023.06.30
 
-- データテーブルを編集した時の結果が保存されないバグを修正（issues: [#1](https://github.com/hamamoto-lab/imageViewer/issues/1)）
 
 # Installation
 
@@ -27,12 +27,6 @@
    ```
 
 
-# Demonstration
-## `はじめから解析する`
-![demo_1](https://github.com/hamamoto-lab/imageViewer/assets/7193590/580572c5-0289-4ff4-83df-d91569b0afc8)
-
-## `途中から解析を再開する`
-![demo_2](https://github.com/hamamoto-lab/imageViewer/assets/7193590/40c35c6b-2cef-4ca1-ba13-110187b355db)
 
 # How to use
 
@@ -58,6 +52,30 @@
    ```
 3. [localhost:8501](http://localhost:8501)にブラウザからアクセスする
 
+
+# Featurs
+- 左上に各フォルダ内に含まれる一番最初のデータ（`0_xxxxx.png`など, Query画像）が表示されます
+- 一度に表示可能な画像数に制限はありません（5–6枚は確認済み）
+- 解析結果（.csv）と解析ログファイル（.log）をzipファイルでダウンロード可能です
+- ダウンロードしたzipファイルの中身を読み込ませることで、途中から解析を再開することが可能です
+
 # Tips
 - 画像ファイル名は`数字_任意の文字列1=Proc任意の文字列2.拡張子`として下さい
 - 画像名として表示されるのは、`任意の文字列1`の部分になります
+
+# License
+GPLv3
+
+------------
+
+## 開発履歴
+
+- 未修正のバグがある場合があります。詳しくは `issues`をご確認下さい
+
+### 2023.07.04
+
+- 近藤さんからのリクエスト部分を機能追加（issues: [#9](https://github.com/hamamoto-lab/imageViewer/issues/9)）
+
+### 2023.06.30
+
+- データテーブルを編集した時の結果が保存されないバグを修正（issues: [#1](https://github.com/hamamoto-lab/imageViewer/issues/1)）
