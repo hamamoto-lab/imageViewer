@@ -25,7 +25,7 @@
 3. `conda create`する
 
    ```
-   conda create -f env.yml
+   conda env create -f env.yml
    ```
 
 
@@ -55,8 +55,10 @@
 2. 以下のスクリプトを実行
 
    ```
+   conda activate imageViewer
    streamlit run front.py
    ```
+   
 3. [localhost:8501](http://localhost:8501)にブラウザからアクセスする
 
 
