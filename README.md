@@ -78,6 +78,11 @@ GPLv3
 
 - 未修正のバグがある場合があります。詳しくは `issues`をご確認下さい
 
+### 2023.07.05
+- `data`ディレクトリに正しくファイルが置かれていない場合のエラーメッセージを出力するように変更（issues: [#11](https://github.com/hamamoto-lab/imageViewer/issues/11)）
+- ラジオボタンからセレクトボックスに変更（issues: [#12](https://github.com/hamamoto-lab/imageViewer/issues/12)）
+- ダウンロードファイルをcsvからexcelファイルに変更（issues: [#14](https://github.com/hamamoto-lab/imageViewer/issues/14)）
+
 ### 2023.07.04
 
 - 近藤さんからのリクエスト部分を機能追加（issues: [#9](https://github.com/hamamoto-lab/imageViewer/issues/9)）
