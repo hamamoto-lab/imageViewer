@@ -114,137 +114,153 @@ def main():
             z.writestr(fname + '.csv', st.session_state['df'].to_csv(index=False))
         
     # ========= Initializing app state =========
-    if 'samples' not in st.session_state: 
-        st.session_state.samples = [path for path in os.listdir('data') if os.path.isdir(os.path.join('data', path))]
-        st.session_state.log = [0 for _ in range(len(st.session_state.samples))]
-        st.session_state.counter = 0
-        st.session_state["error_massage"] = None
-        st.session_state['init'] = 0
+    try:
+        if 'samples' not in st.session_state: 
+            st.session_state.samples = [path for path in os.listdir('data') if os.path.isdir(os.path.join('data', path))]
+            st.session_state.log = [0 for _ in range(len(st.session_state.samples))]
+            st.session_state.counter = 0
+            st.session_state["error_massage"] = None
+            st.session_state['init'] = 0
 
-    sample = Sample(st.session_state.samples[st.session_state.counter])
-    pictures = sample.return_images()
+        sample = Sample(st.session_state.samples[st.session_state.counter])
+        pictures = sample.return_images()
 
 
-    # ======== Viewer =========
-    ## >>>> Page setting <<<<<
-    st.set_page_config(layout='wide')
+        # ======== Viewer =========
+        ## >>>> Page setting <<<<<
+        st.set_page_config(layout='wide')
 
-    ## >>>> Side bar <<<<
-    with st.sidebar:
-        # ====== Subheader ======
-        st.subheader('内視鏡 類似画像供覧ツール')
+        ## >>>> Side bar <<<<
+        with st.sidebar:
+            # ====== Subheader ======
+            st.subheader('内視鏡 類似画像供覧ツール')
 
-        # ====== Project information form ======
-        if st.session_state['init'] == 0:
-            st.radio('start', ['新規解析', '途中から解析'], label_visibility='hidden', key='radio_start')
-            if st.session_state['radio_start'] == '新規解析':
-                with st.form('プロジェクト情報'):
-                    st.text_input('プロジェクト名', placeholder='プロジェクト名を入力して下さい', key='f1')
-                    st.text_input('Person Name 1', placeholder='供覧者1の名前を入力して下さい', key='f2')
-                    st.text_input('Person Name 2', placeholder='供覧者2の名前を入力して下さい', key='f3')
-                    st.text_input('Person Name 3', placeholder='供覧者3の名前を入力して下さい', key='f4')
-                    st.form_submit_button('プロジェクト開始', on_click=start_1)
+            # ====== Project information form ======
+            if st.session_state['init'] == 0:
+                st.radio('start', ['新規解析', '途中から解析'], label_visibility='hidden', key='radio_start')
+                if st.session_state['radio_start'] == '新規解析':
+                    with st.form('プロジェクト情報'):
+                        st.text_input('プロジェクト名', placeholder='プロジェクト名を入力して下さい', key='f1')
+                        st.text_input('Person Name 1', placeholder='供覧者1の名前を入力して下さい', key='f2')
+                        st.text_input('Person Name 2', placeholder='供覧者2の名前を入力して下さい', key='f3')
+                        st.text_input('Person Name 3', placeholder='供覧者3の名前を入力して下さい', key='f4')
+                        st.form_submit_button('プロジェクト開始', on_click=start_1)
+                else:
+                    files = st.file_uploader('ログファイルから解析を再開', accept_multiple_files=True, help='\~.log(必須)と\~.csvの最大2つのファイルを選択することが可能です。')
+                    if files is not None:
+                        for f in files:
+                            if 'csv' in f.name:
+                                st.session_state['df'] = pd.read_csv(f)
+                            if 'log' in f.name:
+                                log = json.load(f)
+                                load_logfile(log)
+                        st.experimental_rerun()
             else:
-                files = st.file_uploader('ログファイルから解析を再開', accept_multiple_files=True, help='\~.log(必須)と\~.csvの最大2つのファイルを選択することが可能です。')
-                if files is not None:
-                    for f in files:
-                        if 'csv' in f.name:
-                            st.session_state['df'] = pd.read_csv(f)
-                        if 'log' in f.name:
-                            log = json.load(f)
-                            load_logfile(log)
-                    st.experimental_rerun()
-        else:
-            # ====== Slide bar =====
-            with st.form('query state'):
-                st.slider('Query number', min_value=1, max_value=len(st.session_state['samples']), 
-                          step = 1, value = st.session_state['counter'] + 1, key='query_slider')
-                st.form_submit_button('Queryを移動する', on_click=move_query)
-            
-            ## >>>> Query name <<<<
-            if st.session_state.log[st.session_state.counter]:
-                st.markdown(f'Query file is: {sample.name}')
-                st.markdown('**:red[供覧済みです!]**')
-            else:
-                st.markdown('**Query file is**')
-                st.info(sample.name)
-
-            ## >>>> PopUp Error Massage <<<<
-            error_empty = st.empty()
-            if st.session_state.error_massage is not None:
-                error_empty.error(st.session_state.error_massage)
+                # ====== Slide bar =====
+                with st.form('query state'):
+                    st.slider('Query number', min_value=1, max_value=len(st.session_state['samples']), 
+                            step = 1, value = st.session_state['counter'] + 1, key='query_slider')
+                    st.form_submit_button('Queryを移動する', on_click=move_query)
                 
-            ## >>>> Move next and previous buttons <<<<
-            col1, col2 =st.columns(2)
-            with col1:
-                st.button('<< 前の画像へ', on_click=minus_counter)
-            with col2:
-                st.button('次の画像へ >>', on_click=plus_counter)
+                ## >>>> Query name <<<<
+                if st.session_state.log[st.session_state.counter]:
+                    st.markdown(f'Query file is: {sample.name}')
+                    st.markdown('**:red[供覧済みです!]**')
+                else:
+                    st.markdown('**Query file is**')
+                    st.info(sample.name)
 
-            ## >>>> Download button <<<<
-            create_zip()
-            with open('results.zip', 'rb') as fp:
-                st.download_button(label = 'Download ZIP',
-                                   data = fp,
-                                   file_name='results.zip',
-                                   mime = 'application/zip')
-                os.remove('results.zip')
+                ## >>>> PopUp Error Massage <<<<
+                error_empty = st.empty()
+                if st.session_state.error_massage is not None:
+                    error_empty.error(st.session_state.error_massage)
+                    
+                ## >>>> Move next and previous buttons <<<<
+                col1, col2 =st.columns(2)
+                with col1:
+                    st.button('<< 前の画像へ', on_click=minus_counter)
+                with col2:
+                    st.button('次の画像へ >>', on_click=plus_counter)
 
-    if st.session_state['init']:
-        ## >>>> Ttitle <<<<
-        st.title('内視鏡 類似画像供覧ツール')
+                ## >>>> Download button <<<<
+                create_zip()
+                with open('results.zip', 'rb') as fp:
+                    st.download_button(label = 'Download ZIP',
+                                    data = fp,
+                                    file_name='results.zip',
+                                    mime = 'application/zip')
+                    os.remove('results.zip')
 
-        ## >>>> Pictures with tile-like viewing <<<<
-        for row in range((len(pictures) + 2) // 3):
-            for i, col in enumerate(st.columns(3)):
-                k = row * 3 + i
-                if k == 0:
-                    col.subheader(f"Query: {sample.suggestion[k]}")
-                    col.image(pictures[k])
-                elif k < len(pictures):
-                    col.subheader(f"{str(k)}: {sample.suggestion[k]}")
-                    col.image(pictures[k])
+        if st.session_state['init']:
+            ## >>>> Ttitle <<<<
+            st.title('内視鏡 類似画像供覧ツール')
 
-        ## >>>> Input form <<<<
-        with st.form('供覧結果', clear_on_submit=True):
-            if st.session_state['log'][st.session_state['counter']]:
-                df_inputed_prev = st.session_state['df'][st.session_state['df']['Query name'] == sample.name].to_dict()
-                radio_defaults1 = [vv for k, v in df_inputed_prev.items() for vv in v.values() if st.session_state['name_person1'] in k]
-                radio_defaults2 = [vv for k, v in df_inputed_prev.items() for vv in v.values() if st.session_state['name_person2'] in k]
-                radio_defaults3 = [vv for k, v in df_inputed_prev.items() for vv in v.values() if st.session_state['name_person3'] in k]
-                radio_defaults4 = [vv for k, v in df_inputed_prev.items() for vv in v.values() if '撮像モード' in k]
-            else:
-                radio_defaults1 = ['OK' for _ in range(1, len(pictures))]
-                radio_defaults2 = ['OK' for _ in range(1, len(pictures))]
-                radio_defaults3 = ['OK' for _ in range(1, len(pictures))]
-                radio_defaults4 = ['BLI' for _ in range(1, len(pictures))]
-            radio_defaults1 = [0 if value == 'OK' else 1 for value in radio_defaults1]
-            radio_defaults2 = [0 if value == 'OK' else 1 for value in radio_defaults2]
-            radio_defaults3 = [0 if value == 'OK' else 1 for value in radio_defaults3]
-            radio_defaults4 = [Mode[value].value for value in radio_defaults4]
-            c1, c2, c3, c4, c5 = st.columns(5)
-            with c1:
-                c1.subheader(f"{st.session_state['name_person1']}")
-                for i in range(1, len(pictures)):
-                    c1.radio(sample.suggestion[i], ("OK", 'Bad'), key = f'p1{i}', horizontal=True, index=radio_defaults1[i - 1])
-            with c2:
-                c2.subheader(f"{st.session_state['name_person2']}")
-                for i in range(1, len(pictures)):
-                    c2.radio(sample.suggestion[i], ("OK", 'Bad'), key = f'p2{i}', horizontal=True, index=radio_defaults2[i - 1])
-            with c3:
-                c3.subheader(f"{st.session_state['name_person3']}")
-                for i in range(1, len(pictures)):
-                    c3.radio(f"{str(i)}:   {sample.suggestion[i]}", ("OK", 'Bad'), key = f'p3{i}', horizontal=True, index=radio_defaults3[i - 1])
-            with c4:
-                c4.subheader('撮像モード')
-                for i in range(1, len(pictures)):
-                    c4.radio(f"{str(i)}:   {sample.suggestion[i]}", ('BLI', 'Indigo', 'LCI', 'NBI', 'WLI'), key = f'mode_{i}', horizontal=True, index=radio_defaults4[i - 1])
-            with c5:
-                st.form_submit_button(label = '供覧結果を転記', on_click = push_tbl)
-        
-        ## >>>> Data table of reviewing results <<<<
-        st.data_editor(st.session_state.df, num_rows='dynamic', on_change=edit_tbl, key='data')
-        
+            ## >>>> Pictures with tile-like viewing <<<<
+            for row in range((len(pictures) + 2) // 3):
+                for i, col in enumerate(st.columns(3)):
+                    k = row * 3 + i
+                    if k == 0:
+                        col.subheader(f"Query: {sample.suggestion[k]}")
+                        col.image(pictures[k])
+                    elif k < len(pictures):
+                        col.subheader(f"{str(k)}: {sample.suggestion[k]}")
+                        col.image(pictures[k])
+
+            ## >>>> Input form <<<<
+            with st.form('供覧結果', clear_on_submit=True):
+                if st.session_state['log'][st.session_state['counter']]:
+                    df_inputed_prev = st.session_state['df'][st.session_state['df']['Query name'] == sample.name].to_dict()
+                    radio_defaults1 = [vv for k, v in df_inputed_prev.items() for vv in v.values() if st.session_state['name_person1'] in k]
+                    radio_defaults2 = [vv for k, v in df_inputed_prev.items() for vv in v.values() if st.session_state['name_person2'] in k]
+                    radio_defaults3 = [vv for k, v in df_inputed_prev.items() for vv in v.values() if st.session_state['name_person3'] in k]
+                    radio_defaults4 = [vv for k, v in df_inputed_prev.items() for vv in v.values() if '撮像モード' in k]
+                else:
+                    radio_defaults1 = ['OK' for _ in range(1, len(pictures))]
+                    radio_defaults2 = ['OK' for _ in range(1, len(pictures))]
+                    radio_defaults3 = ['OK' for _ in range(1, len(pictures))]
+                    radio_defaults4 = ['BLI' for _ in range(1, len(pictures))]
+                radio_defaults1 = [0 if value == 'OK' else 1 for value in radio_defaults1]
+                radio_defaults2 = [0 if value == 'OK' else 1 for value in radio_defaults2]
+                radio_defaults3 = [0 if value == 'OK' else 1 for value in radio_defaults3]
+                radio_defaults4 = [Mode[value].value for value in radio_defaults4]
+                c1, c2, c3, c4, c5 = st.columns(5)
+                with c1:
+                    c1.subheader(f"{st.session_state['name_person1']}")
+                    for i in range(1, len(pictures)):
+                        c1.radio(sample.suggestion[i], ("OK", 'Bad'), key = f'p1{i}', horizontal=True, index=radio_defaults1[i - 1])
+                with c2:
+                    c2.subheader(f"{st.session_state['name_person2']}")
+                    for i in range(1, len(pictures)):
+                        c2.radio(sample.suggestion[i], ("OK", 'Bad'), key = f'p2{i}', horizontal=True, index=radio_defaults2[i - 1])
+                with c3:
+                    c3.subheader(f"{st.session_state['name_person3']}")
+                    for i in range(1, len(pictures)):
+                        c3.radio(f"{str(i)}:   {sample.suggestion[i]}", ("OK", 'Bad'), key = f'p3{i}', horizontal=True, index=radio_defaults3[i - 1])
+                with c4:
+                    c4.subheader('撮像モード')
+                    for i in range(1, len(pictures)):
+                        c4.radio(f"{str(i)}:   {sample.suggestion[i]}", ('BLI', 'Indigo', 'LCI', 'NBI', 'WLI'), key = f'mode_{i}', horizontal=True, index=radio_defaults4[i - 1])
+                with c5:
+                    st.form_submit_button(label = '供覧結果を転記', on_click = push_tbl)
+            
+            ## >>>> Data table of reviewing results <<<<
+            st.data_editor(st.session_state.df, num_rows='dynamic', on_change=edit_tbl, key='data')
+    except:
+        st.error('dataディレクトリに正しくファイルが置かれていません！！正しくファイルを置いて画面をReloadして下さい。')
+        code_message_for_error = '''# 正しいディレクトリ構成
+        data/
+          |– サンプル名_1/
+          |     |– 0_任意の文字列_Proc.jpeg
+          |     |– 1_任意の文字列_Proc.jpeg
+          |     |– 2_任意の文字列_Proc.jpeg
+          |     |– 3_任意の文字列_Proc.jpeg
+          |     |– 4_任意の文字列_Proc.jpeg
+          |     |– 5_任意の文字列_Proc.jpeg
+          |
+          |– サンプル名_2/
+          |     |– 0_任意の文字列_Proc.jpeg
+          |     |–     ︙'''
+        st.code(code_message_for_error)
 
 if __name__ == '__main__':
     main()
