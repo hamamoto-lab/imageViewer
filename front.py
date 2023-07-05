@@ -6,7 +6,7 @@ import pandas as pd
 import datetime as dt
 import json
 from enum import Enum
-from zipfile import ZipFile, ZIP_DEFLATED
+import shutil
 
 class Sample():
     def __init__(self, path) -> None:
@@ -104,14 +104,16 @@ def main():
                                                 f"{st.session_state['name_person2']}": [], 
                                                 f"{st.session_state['name_person3']}": [],
                                                 '撮像モード': []})
-        with ZipFile('results.zip', 'w', ZIP_DEFLATED) as z:
-            fname = dt.datetime.now().strftime('%Y%m%d_%H%M%S')
-            dump_log = json.dumps({k: v for k, v in st.session_state.items() if k in ['counter', 'samples', 'log',
-                                                                                      'name_project', 'name_person1', 
-                                                                                      'name_person2', 'name_person3']},
-                                                                                      indent=4)
-            z.writestr(fname + '.log', dump_log)
-            z.writestr(fname + '.csv', st.session_state['df'].to_csv(index=False))
+        os.mkdir('results')
+        fname = dt.datetime.now().strftime('%Y%m%d_%H%M%S')
+        with open('results/' + fname + '.log', 'w') as f:
+            json.dump({k: v for k, v in st.session_state.items() if k in ['counter', 'samples', 'log',
+                                                                                        'name_project', 'name_person1', 
+                                                                                        'name_person2', 'name_person3']}, 
+                                                                                        f, indent=4)
+        st.session_state['df'].to_excel('results/' + fname + '.xlsx', index=False)
+        shutil.make_archive('results', format='zip', root_dir = 'results')
+        shutil.rmtree('results')
         
     # ========= Initializing app state =========
     try:
@@ -146,11 +148,11 @@ def main():
                         st.text_input('Person Name 3', placeholder='供覧者3の名前を入力して下さい', key='f4')
                         st.form_submit_button('プロジェクト開始', on_click=start_1)
                 else:
-                    files = st.file_uploader('ログファイルから解析を再開', accept_multiple_files=True, help='\~.log(必須)と\~.csvの最大2つのファイルを選択することが可能です。')
+                    files = st.file_uploader('ログファイルから解析を再開', accept_multiple_files=True, help='\~.log(必須)と\~.xlsxの最大2つのファイルを選択することが可能です。')
                     if files is not None:
                         for f in files:
-                            if 'csv' in f.name:
-                                st.session_state['df'] = pd.read_csv(f)
+                            if 'xlsx' in f.name:
+                                st.session_state['df'] = pd.read_excel(f)
                             if 'log' in f.name:
                                 log = json.load(f)
                                 load_logfile(log)
