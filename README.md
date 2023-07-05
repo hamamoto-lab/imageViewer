@@ -15,12 +15,13 @@
 
 # Installation
 
-1. `git clone`する
+1. `git clone` or [Release](https://github.com/hamamoto-lab/imageViewer/releases)から最新版をダウンロードする
 
    ```
+   # git cloneの場合
    git clone git@github.com:hamamoto-lab/imageViewer.git
    ```
-2. git cloneしたディレクトリに移動する
+2. `git clone` or ダウンロード&解凍したディレクトリに移動する
 3. `conda create`する
 
    ```
