@@ -245,20 +245,20 @@ def main():
             
             ## >>>> Data table of reviewing results <<<<
             st.data_editor(st.session_state.df, num_rows='dynamic', on_change=edit_tbl, key='data')
-    except:
+    except AttributeError:
         st.error('dataディレクトリに正しくファイルが置かれていません！！正しくファイルを置いて画面をReloadして下さい。')
         code_message_for_error = '''# 正しいディレクトリ構成
         data/
           |– サンプル名_1/
-          |     |– 0_任意の文字列_Proc.jpeg
-          |     |– 1_任意の文字列_Proc.jpeg
-          |     |– 2_任意の文字列_Proc.jpeg
-          |     |– 3_任意の文字列_Proc.jpeg
-          |     |– 4_任意の文字列_Proc.jpeg
-          |     |– 5_任意の文字列_Proc.jpeg
+          |     |– 0_任意の文字列=Proc.jpeg
+          |     |– 1_任意の文字列=Proc.jpeg
+          |     |– 2_任意の文字列=Proc.jpeg
+          |     |– 3_任意の文字列=Proc.jpeg
+          |     |– 4_任意の文字列=Proc.jpeg
+          |     |– 5_任意の文字列=Proc.jpeg
           |
           |– サンプル名_2/
-          |     |– 0_任意の文字列_Proc.jpeg
+          |     |– 0_任意の文字列=Proc.jpeg
           |     |–     ︙'''
         st.code(code_message_for_error)
 
