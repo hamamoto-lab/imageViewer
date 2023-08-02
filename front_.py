@@ -63,11 +63,11 @@ def main():
     def push_tbl():
         df_var = pd.DataFrame({'Query name': [sample.name for _ in range(len(sample.suggestion) - 1)],
                                'Suggested file': sample.suggestion[1:],
-                               f"{st.session_state['name_person1']}": [v for k, v in st.session_state.items() if 'p1' in k],
-                               f"{st.session_state['name_person2']}": [v for k, v in st.session_state.items() if 'p2' in k],
-                               f"{st.session_state['name_person3']}": [v for k, v in st.session_state.items() if 'p3' in k],
-                               '撮像モード': [v for k, v in st.session_state.items() if 'mode1_' in k],
-                               '肉眼型': [v for k, v in st.session_state.items() if 'mode2_' in k]})
+                               f"{st.session_state['name_person1']}": [v for k, v in sorted(st.session_state.items()) if 'p1' in k],
+                               f"{st.session_state['name_person2']}": [v for k, v in sorted(st.session_state.items()) if 'p2' in k],
+                               f"{st.session_state['name_person3']}": [v for k, v in sorted(st.session_state.items()) if 'p3' in k],
+                               '撮像モード': [v for k, v in sorted(st.session_state.items()) if 'mode1_' in k],
+                               '肉眼型': [v for k, v in sorted(st.session_state.items()) if 'mode2_' in k]})
         st.session_state.df = pd.concat([df_var, st.session_state.df]).reset_index(drop=True)
         st.session_state.log[st.session_state.counter] = 1
         plus_counter()
@@ -242,7 +242,6 @@ def main():
                 radio_defaults3 = [int(value) - 1 for value in radio_defaults3]
                 radio_defaults4 = [Mode[value].value for value in radio_defaults4]
                 radio_defaults5 = [Mode2[value] for value in radio_defaults5]
-                st.text(radio_defaults5)
                 c1, c2, c3, c4, c5, c6 = st.columns(6)
                 with c1:
                     c1.subheader(f"{st.session_state['name_person1']}")

@@ -53,10 +53,10 @@ def main():
     def push_tbl():
         df_var = pd.DataFrame({'Query name': [sample.name for _ in range(len(sample.suggestion) - 1)],
                                'Suggested file': sample.suggestion[1:],
-                               f"{st.session_state['name_person1']}": [v for k, v in st.session_state.items() if 'p1' in k],
-                               f"{st.session_state['name_person2']}": [v for k, v in st.session_state.items() if 'p2' in k],
-                               f"{st.session_state['name_person3']}": [v for k, v in st.session_state.items() if 'p3' in k],
-                               '撮像モード': [v for k, v in st.session_state.items() if 'mode_' in k]})
+                               f"{st.session_state['name_person1']}": [v for k, v in sorted(st.session_state.items()) if 'p1' in k],
+                               f"{st.session_state['name_person2']}": [v for k, v in sorted(st.session_state.items()) if 'p2' in k],
+                               f"{st.session_state['name_person3']}": [v for k, v in sorted(st.session_state.items()) if 'p3' in k],
+                               '撮像モード': [v for k, v in sorted(st.session_state.items()) if 'mode_' in k]})
         st.session_state.df = pd.concat([df_var, st.session_state.df]).reset_index(drop=True)
         st.session_state.log[st.session_state.counter] = 1
         plus_counter()
