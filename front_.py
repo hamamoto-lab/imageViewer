@@ -156,9 +156,12 @@ def main():
                 if st.session_state['radio_start'] == '新規解析':
                     with st.form('プロジェクト情報'):
                         st.text_input('お名前と日付', placeholder='お名前と日付を入力して下さい', key='f1')
-                        st.text_input('色が似ている', placeholder='何も入れないで下さい', key='f2')
-                        st.text_input('形が似ている', placeholder='何も入れないで下さい', key='f3')
-                        st.text_input('模様が似ている', placeholder='何も入れないで下さい', key='f4')
+                        #st.text_input('色が似ている', placeholder='何も入れないで下さい', key='f2', disabled=True)
+                        #st.text_input('形が似ている', placeholder='何も入れないで下さい', key='f3', disabled=True)
+                        #st.text_input('模様が似ている', placeholder='何も入れないで下さい', key='f4', disabled=True)
+                        st.session_state['f2'] = '色が似ている'
+                        st.session_state['f3'] = '形が似ている'
+                        st.session_state['f4'] = '模様が似ている'
                         st.form_submit_button('プロジェクト開始', on_click=start_1)
                 else:
                     files = st.file_uploader('ログファイルから解析を再開', accept_multiple_files=True, help='\~.log(必須)と\~.xlsxの最大2つのファイルを選択することが可能です。')
@@ -246,15 +249,15 @@ def main():
                 with c1:
                     c1.subheader(f"{st.session_state['name_person1']}")
                     for i in range(1, len(pictures)):
-                        c1.radio(sample.suggestion[i], ('1', '2', '3', '4', '5'), key = f'p1{i}', horizontal=True, index=radio_defaults1[i - 1])
+                        c1.radio(f"{str(i)}:   {sample.suggestion[i]}", ('1', '2', '3', '4', '5'), key = f'p1{i}', horizontal=True, index=radio_defaults1[i - 1])
                 with c2:
                     c2.subheader(f"{st.session_state['name_person2']}")
                     for i in range(1, len(pictures)):
-                        c2.radio(sample.suggestion[i], ('1', '2', '3', '4', '5'), key = f'p2{i}', horizontal=True, index=radio_defaults2[i - 1])
+                        c2.radio(f"{str(i)}:   {sample.suggestion[i]}", ('1', '2', '3', '4', '5'), key = f'p2{i}', horizontal=True, index=radio_defaults2[i - 1])
                 with c3:
                     c3.subheader(f"{st.session_state['name_person3']}")
                     for i in range(1, len(pictures)):
-                        c3.radio(sample.suggestion[i], ('1', '2', '3', '4', '5'), key = f'p3{i}', horizontal=True, index=radio_defaults3[i - 1])
+                        c3.radio(f"{str(i)}:   {sample.suggestion[i]}", ('1', '2', '3', '4', '5'), key = f'p3{i}', horizontal=True, index=radio_defaults3[i - 1])
                 with c4:
                     c4.subheader('撮像モード')
                     for i in range(1, len(pictures)):
