@@ -175,6 +175,7 @@ def main():
                         st.experimental_rerun()
             else:
                 # ====== Slide bar =====
+                st.write(f"{sum(st.session_state['log'])}枚のクエリ画像リストを供覧済みです")
                 with st.form('query state'):
                     st.slider('Query number', min_value=1, max_value=len(st.session_state['samples']), 
                             step = 1, value = st.session_state['counter'] + 1, key='query_slider')
